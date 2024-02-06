@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class sport_api {
-  final String apiKey = dotenv.env['api_key'].toString();
+  final String apiKey = '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc';
   final String apiHost = 'api-football-v1.p.rapidapi.com';
 
   Future<dynamic> getStandings(String season, String league) async {
@@ -154,7 +154,8 @@ class sport_api {
       'X-RapidAPI-Key': apiKey,
       'X-RapidAPI-Host': apiHost,
     };
-    var params = {// 고쳐야함 
+    var params = {
+      // 고쳐야함
       'league': leagueId,
       'season': season,
       'from': DateFormat('yyyy-mm-dd').format(DateTime.utc(2023, 04, 20)),

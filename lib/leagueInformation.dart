@@ -5,6 +5,7 @@ import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_sport/Detailranking.dart';
 import 'package:flutter_application_sport/leagueDetail.dart';
+import 'package:flutter_application_sport/matchsInformation.dart';
 import 'package:flutter_application_sport/sport_api.dart';
 import 'package:http/http.dart';
 
@@ -35,59 +36,89 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   @override
   Widget build(BuildContext context) {
     var futureBuilderMatchs = FutureBuilder(
-    future: showMatchs(),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
-      } else if (snapshot.hasError) {
-        return const Center(child: Text('Error loading data'));
-      } else {
-        return Expanded(
-          child: ListView.separated(
-            itemBuilder: (context, index) {
-              return  Container(
-            padding: EdgeInsets.all(16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.network('https://example.com/image1.jpg'),
-                      SizedBox(height: 16.0),
-                      Text(
-                        '왼쪽 이미지와 관련된 텍스트',
-                        style: TextStyle(fontSize: 16.0),
+      future: showMatchs(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Error loading data'));
+        } else {
+          return Expanded(
+            child: ListView.separated(
+              itemBuilder: (context, index) {
+                var m = matchs['response'][index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MatchsInformation(
+                          matchs: matchs,
+                          index: index,
+                        ),
                       ),
-                    ],
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.network(m['teams']['home']['logo']),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                m['teams']['home']['name'].toString(),
+                                textAlign: TextAlign.start,
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(
+                          child: Container(
+                            child: Text(
+                              '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
+                              style: const TextStyle(fontSize: 16.0),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 16,
+                        ),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Image.network(m['teams']['away']['logo']),
+                              const SizedBox(height: 16.0),
+                              Text(
+                                m['teams']['away']['name'].toString(),
+                                textAlign: TextAlign.end,
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                SizedBox(width: 16.0), // 이미지 사이의 간격을 조절할 수 있습니다.
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Image.network('https://example.com/image2.jpg'),
-                      SizedBox(height: 16.0),
-                      Text(
-                        '오른쪽 이미지와 관련된 텍스트',
-                        style: TextStyle(fontSize: 16.0),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                );
+              },
+              separatorBuilder: (context, index) => const Divider(),
+              itemCount: matchs['response'].length,
             ),
-              );
-
-            },
-            separatorBuilder: (context, index) => Divider(),
-            itemCount: matchs['response'].length,
-          ),
-        );
-      }
-    },
-  );
+          );
+        }
+      },
+    );
     var futureBuilderRank = FutureBuilder(
       future: showRank(),
       builder: (context, snapshot) {
@@ -102,11 +133,12 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                 var r = ranking['response'][0]['league']['standings'][0][index];
                 return ListTile(
                   leading: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8)),
-                      child: Image.network(r['team']['logo'])),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Image.network(r['team']['logo']),
+                  ),
                   title: Text('${r['rank']}. ${r['team']['name']}'),
                   subtitle: Text(r['form'].toString()),
                   trailing: Text(
@@ -176,7 +208,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                         ),
                       ),
                       title: Text(
-                        '${index + 1}. ' + topScorersRecord['name'].toString(),
+                        '${index + 1}. ${topScorersRecord['name']}',
                         style: const TextStyle(color: Colors.white),
                       ),
                       trailing: Text(
@@ -254,7 +286,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
             unSelectedColor: Colors.yellow,
             selectedColor: Colors.red,
           ),
-          if(selectedOption == id[0]) futureBuilderMatchs,
+          if (selectedOption == id[0]) futureBuilderMatchs,
           if (selectedOption == id[2]) futureBuilderRank,
           if (selectedOption == id[3]) futureBuilderRecord,
         ],
@@ -277,6 +309,5 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   Future<void> showMatchs() async {
     matchs = await sport_api().matchsInformation(widget.leagueId, selectYear)
         as Map<String, dynamic>;
-    print(matchs);
   }
 }

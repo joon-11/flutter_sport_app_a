@@ -1,6 +1,5 @@
 import 'dart:math';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_sport/cupInformation.dart';
 import 'package:flutter_application_sport/leagueInformation.dart';
@@ -58,7 +57,7 @@ class _firstPageState extends State<firstPage> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   '리그',
                   style: TextStyle(
                     fontSize: 24,
@@ -66,22 +65,26 @@ class _firstPageState extends State<firstPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Row(
                   children: [
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                     Flexible(
                       child: TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
                             vertical: 7,
                             horizontal: 16,
                           ),
                           border: InputBorder.none,
-                          icon: Padding(padding: EdgeInsets.only(left: 13,),
-                          child: Icon(Icons.search),),
+                          icon: Padding(
+                            padding: EdgeInsets.only(
+                              left: 13,
+                            ),
+                            child: Icon(Icons.search),
+                          ),
                           hintText: '원하는 리그 검색',
                           hintStyle: TextStyle(
                             color: Colors.white,
@@ -94,7 +97,7 @@ class _firstPageState extends State<firstPage> {
                         },
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 8,
                     ),
                   ],
@@ -124,8 +127,11 @@ class _firstPageState extends State<firstPage> {
                     itemCount: 100,
                     itemBuilder: (context, index) {
                       var T = leagueTeam['response'][index]['league'];
-                      if(searchText.isNotEmpty && !T['name'].toLowerCase().contains(searchText.toLowerCase())){
-                          return SizedBox.shrink();
+                      if (searchText.isNotEmpty &&
+                          !T['name']
+                              .toLowerCase()
+                              .contains(searchText.toLowerCase())) {
+                        return const SizedBox.shrink();
                       }
                       return ListTile(
                         title: Container(
