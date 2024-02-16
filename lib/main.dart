@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_sport/cupInformation.dart';
 import 'package:flutter_application_sport/leagueInformation.dart';
@@ -36,8 +37,16 @@ class firstPage extends StatefulWidget {
 
 class _firstPageState extends State<firstPage> {
   Map<String, dynamic> leagueTeam = {};
-
+  Future<void>? _teamListFuture;
   String searchText = '';
+  var selectOption = 'ft';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _teamListFuture = teamShowing();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,78 +117,94 @@ class _firstPageState extends State<firstPage> {
         ),
         body: Column(
           children: [
+            CustomRadioButton(
+              defaultSelected: 'ft',
+              enableShape: true,
+              buttonLables: ['football', 'baseball'],
+              buttonValues: ['ft', 'bb'],
+              radioButtonValue: (p0) {
+                setState(
+                  () {
+                    selectOption = p0;
+                  },
+                );
+              },
+              unSelectedColor: Colors.red,
+              selectedColor: Colors.yellow,
+            ),
             const SizedBox(
               height: 20,
             ),
             const SizedBox(
               width: 70,
             ),
-            FutureBuilder(
-              future: teamShowing(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return const Center(child: Text('데이터 로딩 중 오류 발생'));
-                } else {
-                  return Expanded(
+            if (selectOption == 'ft')
+              FutureBuilder(
+                future: _teamListFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return const Center(child: Text('데이터 로딩 중 오류 발생'));
+                  } else {
+                    return Expanded(
                       child: ListView.builder(
-                    itemCount: 100,
-                    itemBuilder: (context, index) {
-                      var T = leagueTeam['response'][index]['league'];
-                      if (searchText.isNotEmpty &&
-                          !T['name']
-                              .toLowerCase()
-                              .contains(searchText.toLowerCase())) {
-                        return const SizedBox.shrink();
-                      }
-                      return ListTile(
-                        title: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                          ),
-                          child: ClipOval(
-                            child: Image.network(
-                              T['logo'],
-                              width: 5,
-                              height: 50,
+                        itemCount: 100,
+                        itemBuilder: (context, index) {
+                          var T = leagueTeam['response'][index]['league'];
+                          if (searchText.isNotEmpty &&
+                              !T['name']
+                                  .toLowerCase()
+                                  .contains(searchText.toLowerCase())) {
+                            return const SizedBox.shrink();
+                          }
+                          return ListTile(
+                            title: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                              ),
+                              child: ClipOval(
+                                child: Image.network(
+                                  T['logo'],
+                                  width: 5,
+                                  height: 50,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                        subtitle: Text(
-                          T['name'].toString() +
-                              ' - ' +
-                              leagueTeam['response'][index]['country']['name']
-                                  .toString(),
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                if (T['type'] == 'Cup') {
-                                  return ShowCupInformation(
-                                    leagueId: T['id'].toString(),
-                                    leagueName: T['name'].toString(),
-                                  );
-                                } else {
-                                  return ShowDetailInformation(
-                                    leagueId: T['id'].toString(),
-                                    leagueName: T['name'].toString(),
-                                  );
-                                }
-                              },
+                            subtitle: Text(
+                              '${T['name']} - ${leagueTeam['response'][index]['country']['name']}',
+                              style: const TextStyle(fontSize: 18),
                             ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    if (T['type'] == 'Cup') {
+                                      return ShowCupInformation(
+                                        leagueId: T['id'].toString(),
+                                        leagueName: T['name'].toString(),
+                                      );
+                                    } else {
+                                      return ShowDetailInformation(
+                                        leagueId: T['id'].toString(),
+                                        leagueName: T['name'].toString(),
+                                      );
+                                    }
+                                  },
+                                ),
+                              );
+                            },
                           );
                         },
-                      );
-                    },
-                  ));
-                }
-              },
-            )
+                      ),
+                    );
+                  }
+                },
+              )
+            else if (selectOption == 'bb')
+              Text('야구임!')
           ],
         ),
       ),

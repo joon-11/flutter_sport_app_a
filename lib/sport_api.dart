@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+// '44b53a7a9fmshd4b09e186aeeefbp1eb70ejsnbca7d65497bd'
+
 class sport_api {
   final String apiKey = '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc';
   final String apiHost = 'api-football-v1.p.rapidapi.com';
@@ -28,7 +30,6 @@ class sport_api {
         return json.decode(response.body);
       } else {
         print('Error: ${response.statusCode}');
-        print(response.body);
       }
     } catch (error) {
       print('Error: $error');
@@ -109,7 +110,6 @@ class sport_api {
         return jsonDecode(response.body);
       } else {
         print('Error: ${response.statusCode}');
-        print(response.body);
       }
     } catch (error) {
       print('Error: $error');
@@ -140,7 +140,62 @@ class sport_api {
         return jsonDecode(response.body);
       } else {
         print('Error: ${response.statusCode}');
-        print(response.body);
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  Future<void> getTopRedcard(String leagueId, String season) async {
+    final String apiUrl =
+        'https://api-football-v1.p.rapidapi.com/v3/players/topredcards';
+    final Map<String, String> headers = {
+      'X-RapidAPI-Key': apiKey,
+      'X-RapidAPI-Host': apiHost,
+    };
+
+    final Map<String, String> params = {
+      'league': leagueId,
+      'season': season,
+    };
+
+    final Uri uri = Uri.parse(apiUrl).replace(queryParameters: params);
+
+    try {
+      final http.Response response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  Future<void> getTopYellowcard(String leagueId, String season) async {
+    final String apiUrl =
+        'https://api-football-v1.p.rapidapi.com/v3/players/topyellowcards';
+    final Map<String, String> headers = {
+      'X-RapidAPI-Key': apiKey,
+      'X-RapidAPI-Host': apiHost,
+    };
+
+    final Map<String, String> params = {
+      'league': leagueId,
+      'season': season,
+    };
+
+    final Uri uri = Uri.parse(apiUrl).replace(queryParameters: params);
+
+    try {
+      final http.Response response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
       }
     } catch (error) {
       print('Error: $error');
@@ -158,14 +213,15 @@ class sport_api {
       // 고쳐야함
       'league': leagueId,
       'season': season,
-      'from': DateFormat('yyyy-mm-dd').format(DateTime.utc(2023, 04, 20)),
-      'to': DateFormat('yyyy-mm-dd').format(DateTime.utc(2024, 11, 5))
+      'from': DateFormat('yyyy-mm-dd').format(DateTime.utc(2024, 01, 20)),
+      'to': DateFormat('yyyy-mm-dd').format(DateTime.utc(2024, 02, 20))
     };
 
     final Uri uri = Uri.parse('$url?${Uri(queryParameters: params).query}');
 
     try {
       var response = await http.get(uri, headers: headers);
+      print(response.body);
       return jsonDecode(response.body);
     } catch (error) {
       print(error);

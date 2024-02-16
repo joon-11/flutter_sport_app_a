@@ -25,13 +25,24 @@ class ShowDetailInformation extends StatefulWidget {
 
 class _ShowDetailInformationState extends State<ShowDetailInformation> {
   List id = ['Matchs', 'News', 'Rank', 'Record'];
-  String selectedOption = 'Matchs';
+  String selectedOption = 'Record';
   final _years = ['2020', '2021', '2022', '2023'];
   String selectYear = '2023';
   Map<String, dynamic> ranking = {};
   Map<String, dynamic> topScorers = {};
   Map<String, dynamic> topAssist = {};
+  Map<String, dynamic> topRedcard = {};
+  Map<String, dynamic> topYellowcard = {};
   Map<String, dynamic> matchs = {};
+
+  Future<void>? _teamRankFuture;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _teamRankFuture = showRank();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +131,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
       },
     );
     var futureBuilderRank = FutureBuilder(
-      future: showRank(),
+      future: _teamRankFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -169,76 +180,178 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
       },
     );
 
-    var futureBuilderRecord = FutureBuilder(
-      future: showRecord(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Error loading data'));
-        } else {
-          return Column(
-            children: [
-              const SizedBox(
-                child: Text('득점 순위'),
-              ),
-              Container(
-                width: double.infinity,
-                height: 600,
-                padding: const EdgeInsets.all(10),
-                decoration: const BoxDecoration(
-                  color: Colors.pink,
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50),
-                  ),
+    var futureBuilderRecord = SingleChildScrollView(
+      child: FutureBuilder(
+        future: showRecord(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Error loading data'));
+          } else {
+            return Column(
+              children: [
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('득점순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var score = topScorers['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              score['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${score['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topScorers['response'][index]['statistics'][0]
+                                    ['goals']['total']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
                 ),
-                child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    var topScorersRecord =
-                        topScorers['response'][index]['player'];
-                    return ListTile(
-                      leading: Container(
-                        decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(
-                              Radius.circular(8),
-                            )),
-                        child: Image.network(
-                          topScorersRecord['photo'],
-                        ),
-                      ),
-                      title: Text(
-                        '${index + 1}. ${topScorersRecord['name']}',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      trailing: Text(
-                        topScorers['response'][index]['statistics'][0]['goals']
-                                ['total']
-                            .toString(),
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    );
-                  },
-                  itemCount: 4,
-                  separatorBuilder: (context, index) => const Divider(),
+                SizedBox(
+                  height: 10,
                 ),
-                // ElevatedButton(
-                //   onPressed: () =>
-                //       Navigator.push(context, MaterialPageRoute(
-                //     builder: (context) {
-                //       return DetailRanking();
-                //     },
-                //   )),
-                //   child: Text(
-                //     '순위 더보기',
-                //     style: TextStyle(fontSize: 8),
-                //   ),
-                // )
-              ),
-            ],
-          );
-        }
-      },
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('어시스트 순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var assist = topAssist['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              assist['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${assist['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topAssist['response'][index]['statistics'][0]
+                                    ['goals']['assists']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('레드카드 순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var red = topRedcard['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              red['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${red['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topRedcard['response'][index]['statistics'][0]
+                                    ['cards']['red']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('레드카드 순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var yellow = topYellowcard['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              yellow['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${yellow['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topYellowcard['response'][index]['statistics'][0]
+                                    ['cards']['yellow']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 300,
+                )
+              ],
+            );
+          }
+        },
+      ),
     );
     return Scaffold(
       appBar: AppBar(
@@ -268,8 +381,8 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
           ),
           CustomRadioButton(
             enableShape: true,
-            defaultSelected: id[0],
-            buttonLables: [
+            defaultSelected: selectedOption,
+            buttonLables: const [
               '경기',
               '뉴스',
               '순위',
@@ -304,6 +417,10 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
         as Map<String, dynamic>;
     topAssist = await sport_api().getTopAssist(widget.leagueId, selectYear)
         as Map<String, dynamic>;
+    topRedcard = await sport_api().getTopRedcard(widget.leagueId, selectYear)
+        as Map<String, dynamic>;
+    topYellowcard = await sport_api()
+        .getTopYellowcard(widget.leagueId, selectYear) as Map<String, dynamic>;
   }
 
   Future<void> showMatchs() async {
