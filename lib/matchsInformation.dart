@@ -11,10 +11,12 @@ class MatchsInformation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            matchs['response'][index]['teams']['home']['name'].toString() +
-                " VS " +
-                matchs['response'][index]['teams']['away']['name'].toString()),
+        title: Center(
+          child: Text(
+              matchs['response'][index]['teams']['home']['name'].toString()+
+                  " VS " +
+                  matchs['response'][index]['teams']['away']['name'].toString()),
+        ),
       ),
     );
   }

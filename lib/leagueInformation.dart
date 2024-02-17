@@ -24,8 +24,8 @@ class ShowDetailInformation extends StatefulWidget {
 }
 
 class _ShowDetailInformationState extends State<ShowDetailInformation> {
-  List id = ['Matchs', 'News', 'Rank', 'Record'];
-  String selectedOption = 'Record';
+  List id = ['Matchs', 'Rank', 'Record'];
+  String selectedOption = 'Rank';
   final _years = ['2020', '2021', '2022', '2023'];
   String selectYear = '2023';
   Map<String, dynamic> ranking = {};
@@ -35,14 +35,6 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   Map<String, dynamic> topYellowcard = {};
   Map<String, dynamic> matchs = {};
 
-  Future<void>? _teamRankFuture;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _teamRankFuture = showRank();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,9 +87,11 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                         ),
                         Expanded(
                           child: Container(
-                            child: Text(
-                              '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
-                              style: const TextStyle(fontSize: 16.0),
+                            child: Center(
+                              child: Text(
+                                '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
+                                style: const TextStyle(fontSize: 16.0),
+                              ),
                             ),
                           ),
                         ),
@@ -131,7 +125,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
       },
     );
     var futureBuilderRank = FutureBuilder(
-      future: _teamRankFuture,
+      future: showRank(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -384,7 +378,6 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
             defaultSelected: selectedOption,
             buttonLables: const [
               '경기',
-              '뉴스',
               '순위',
               '기록',
             ],
@@ -400,8 +393,8 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
             selectedColor: Colors.red,
           ),
           if (selectedOption == id[0]) futureBuilderMatchs,
-          if (selectedOption == id[2]) futureBuilderRank,
-          if (selectedOption == id[3]) futureBuilderRecord,
+          if (selectedOption == id[1]) futureBuilderRank,
+          if (selectedOption == id[2]) futureBuilderRecord,
         ],
       ),
     );
@@ -410,6 +403,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   Future<void> showRank() async {
     ranking = await sport_api().getStandings(selectYear, widget.leagueId)
         as Map<String, dynamic>;
+    print(ranking);
   }
 
   Future<void> showRecord() async {

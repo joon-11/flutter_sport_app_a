@@ -3,10 +3,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-// '44b53a7a9fmshd4b09e186aeeefbp1eb70ejsnbca7d65497bd'
+// '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc' google
+// '44b53a7a9fmshd4b09e186aeeefbp1eb70ejsnbca7d65497bd' 쌤
+// '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf' naver
 
 class sport_api {
-  final String apiKey = '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc';
+  final String apiKey = '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf';
   final String apiHost = 'api-football-v1.p.rapidapi.com';
 
   Future<dynamic> getStandings(String season, String league) async {
@@ -210,15 +212,14 @@ class sport_api {
       'X-RapidAPI-Host': apiHost,
     };
     var params = {
-      // 고쳐야함
       'league': leagueId,
       'season': season,
-      'from': DateFormat('yyyy-mm-dd').format(DateTime.utc(2024, 01, 20)),
-      'to': DateFormat('yyyy-mm-dd').format(DateTime.utc(2024, 02, 20))
+      'from': DateFormat('yyyy-MM-dd').format(DateTime.now()),
+      'to': DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 20)))
     };
 
     final Uri uri = Uri.parse('$url?${Uri(queryParameters: params).query}');
-
+    print(DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 20))));
     try {
       var response = await http.get(uri, headers: headers);
       print(response.body);
