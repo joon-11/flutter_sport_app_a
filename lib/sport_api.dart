@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf' naver
 
 class sport_api {
-  final String apiKey = '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf';
+  final String apiKey = '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc';
   final String apiHost = 'api-football-v1.p.rapidapi.com';
 
   Future<dynamic> getStandings(String season, String league) async {
@@ -204,28 +204,28 @@ class sport_api {
     }
   }
 
-  Future<void> matchsInformation(String leagueId, String season) async {
-    var url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures';
-
-    var headers = {
+  Future<void> matchsInformation(
+      String leagueId, String selectYear, DateTime date) async {
+    final String url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures';
+    final Map<String, String> headers = {
       'X-RapidAPI-Key': apiKey,
       'X-RapidAPI-Host': apiHost,
     };
-    var params = {
-      'league': leagueId,
-      'season': season,
-      'from': DateFormat('yyyy-MM-dd').format(DateTime.now()),
-      'to': DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 20)))
-    };
 
-    final Uri uri = Uri.parse('$url?${Uri(queryParameters: params).query}');
-    print(DateFormat('yyyy-MM-dd').format(DateTime.now().add(Duration(days: 20))));
+    final Uri uri = Uri.parse('$url?date=2024-02-24&league=61&season=2023');
+
     try {
-      var response = await http.get(uri, headers: headers);
-      print(response.body);
-      return jsonDecode(response.body);
+      final http.Response response = await http.get(uri, headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = json.decode(response.body);
+        print(data);
+        return jsonDecode(response.body);
+      } else {
+        print('Error: ${response.statusCode}');
+      }
     } catch (error) {
-      print(error);
+      print('Error: $error');
     }
   }
 }

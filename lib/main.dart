@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
@@ -6,9 +7,17 @@ import 'package:flutter_application_sport/cupInformation.dart';
 import 'package:flutter_application_sport/leagueInformation.dart';
 import 'package:flutter_application_sport/login.dart';
 import 'package:flutter_application_sport/sport_api.dart';
-import 'package:http/http.dart';
+import 'package:google_translate/components/google_translate.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  GoogleTranslate.initialize(
+    apiKey: "AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw",
+    sourceLanguage: "en",
+    targetLanguage: "ko",
+  );
   runApp(const MyApp());
 }
 
@@ -120,8 +129,8 @@ class _firstPageState extends State<firstPage> {
             CustomRadioButton(
               defaultSelected: 'ft',
               enableShape: true,
-              buttonLables: ['football', 'baseball'],
-              buttonValues: ['ft', 'bb'],
+              buttonLables: const ['football', 'baseball'],
+              buttonValues: const ['ft', 'bb'],
               radioButtonValue: (p0) {
                 setState(
                   () {
@@ -148,56 +157,63 @@ class _firstPageState extends State<firstPage> {
                     return const Center(child: Text('데이터 로딩 중 오류 발생'));
                   } else {
                     return Expanded(
-                      child: ListView.builder(
+                      child: GridView.builder(
                         itemCount: 100,
                         itemBuilder: (context, index) {
                           var T = leagueTeam['response'][index]['league'];
+                          var name = T['name'];
+                          var len = 100 + Random().nextInt(200).toDouble();
                           if (searchText.isNotEmpty &&
                               !T['name']
                                   .toLowerCase()
                                   .contains(searchText.toLowerCase())) {
                             return const SizedBox.shrink();
                           }
-                          return ListTile(
-                            title: Container(
-                              padding: const EdgeInsets.all(20),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                              ),
-                              child: ClipOval(
-                                child: Image.network(
-                                  T['logo'],
-                                  width: 5,
-                                  height: 50,
+                          return Container(
+                            height: len,
+                            child: ListTile(
+                              title: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                ),
+                                child: ClipOval(
+                                  child: Image.network(
+                                    T['logo'],
+                                    width: 70,
+                                    height: len - 40, // 높이에서 padding 두 배를 뺌
+                                  ),
                                 ),
                               ),
+                              subtitle: Text(
+                                '$name - ${leagueTeam['response'][index]['country']['name']}',
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) {
+                                      if (T['type'] == 'Cup') {
+                                        return ShowCupInformation(
+                                          leagueId: T['id'].toString(),
+                                          leagueName: T['name'].toString(),
+                                        );
+                                      } else {
+                                        return ShowDetailInformation(
+                                          leagueId: T['id'].toString(),
+                                          leagueName: T['name'].toString(),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                );
+                              },
                             ),
-                            subtitle: Text(
-                              '${T['name']} - ${leagueTeam['response'][index]['country']['name']}',
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    if (T['type'] == 'Cup') {
-                                      return ShowCupInformation(
-                                        leagueId: T['id'].toString(),
-                                        leagueName: T['name'].toString(),
-                                      );
-                                    } else {
-                                      return ShowDetailInformation(
-                                        leagueId: T['id'].toString(),
-                                        leagueName: T['name'].toString(),
-                                      );
-                                    }
-                                  },
-                                ),
-                              );
-                            },
                           );
                         },
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2),
                       ),
                     );
                   }
@@ -214,4 +230,26 @@ class _firstPageState extends State<firstPage> {
   Future<void> teamShowing() async {
     leagueTeam = await sport_api().loadTeam() as Map<String, dynamic>;
   }
+
+  // Future<String> getTranslation(text) async {
+  //   var result_cloud_google = '';
+  //   var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
+  //   var key = 'AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw';
+  //   var to = "ko"; //(ex: en, ko, etc..)
+
+  //   var response = await http.post(
+  //     Uri.parse('$_baseUrl?target=$to&key=$key&q=$text'),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     var dataJson = jsonDecode(response.body);
+  //     // print(dataJson);
+  //     // var translatedText =
+  //     //      dataJson['data']['translations'][0]['translatedText'];
+  //     return dataJson;
+  //   } else {
+  //     print(response.statusCode);
+  //     return '번역오류';
+  //   }
+  // }
 }

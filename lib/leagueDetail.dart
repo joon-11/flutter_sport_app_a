@@ -22,7 +22,7 @@ class FootballTeamInformation extends StatelessWidget {
         appBar: AppBar(
           title: Text(
             name,
-            style: TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.red,
         ),
@@ -48,12 +48,12 @@ class FootballTeamInformation extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 20,
                       ),
                       Container(
-                        child: Text('다음경기'),
-                        decoration: BoxDecoration(
+                        child: const Text('다음경기'),
+                        decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(50)),
                           color: Colors.red,
                         ),
