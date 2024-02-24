@@ -9,6 +9,7 @@ import 'package:flutter_application_sport/matchsInformation.dart';
 import 'package:flutter_application_sport/playerInformation.dart';
 import 'package:flutter_application_sport/sport_api.dart';
 import 'package:http/http.dart';
+import 'package:intl/intl.dart';
 import 'package:weekly_calendar/weekly_calendar.dart';
 
 class ShowDetailInformation extends StatefulWidget {
@@ -36,135 +37,155 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   Map<String, dynamic> topRedcard = {};
   Map<String, dynamic> topYellowcard = {};
   Map<String, dynamic> matchs = {};
-  DateTime? date;
+  DateTime? d = DateTime.now();
+  late Future matchsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    d = DateTime.now(); // or set it to the initial date you want
+    matchsFuture = showMatchs(d);
+  }
 
   @override
   Widget build(BuildContext context) {
     var futureBuilderMatchs = Scaffold(
-      body: Column(
+      body: Column(        
         children: [
-          WeeklyCalendar(
-            calendarStyle: const CalendarStyle(
-              locale: "en_US",
-              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
-              margin: EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.all(Radius.circular(14))),
-              headerDateTextColor: Colors.white,
-              headerDateTextAlign: Alignment.center,
-              isShowHeaderDateText: true,
-              footerDateTextColor: Colors.white,
-              footerDateTextAlign: Alignment.center,
-              isShowFooterDateText: false,
-              selectedCircleColor: Colors.white,
-              todaySelectedCircleColor: Colors.greenAccent,
-              dayTextColor: Colors.white,
-              todayDayTextColor: Colors.greenAccent,
-              selectedDayTextColor: Colors.black,
-              weekendDayTextColor: Colors.grey,
-              dayOfWeekTextColor: Colors.white,
-              weekendDayOfWeekTextColor: Colors.grey,
+          Expanded(
+            child: Column(
+              children: [
+                WeeklyCalendar(
+                  calendarStyle: const CalendarStyle(
+                    locale: "en_US",
+                    padding: EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                    margin: EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.all(Radius.circular(14))),
+                    headerDateTextColor: Colors.white,
+                    headerDateTextAlign: Alignment.center,
+                    isShowHeaderDateText: true,
+                    footerDateTextColor: Colors.white,
+                    footerDateTextAlign: Alignment.center,
+                    isShowFooterDateText: false,
+                    selectedCircleColor: Colors.white,
+                    todaySelectedCircleColor: Colors.greenAccent,
+                    dayTextColor: Colors.white,
+                    todayDayTextColor: Colors.greenAccent,
+                    selectedDayTextColor: Colors.black,
+                    weekendDayTextColor: Colors.grey,
+                    dayOfWeekTextColor: Colors.white,
+                    weekendDayOfWeekTextColor: Colors.grey,
+                  ),
+                  isAutoSelect: true,
+                  onChangedSelectedDate: (DateTime date) {
+                    setState(() {
+                      d = date;
+                      matchsFuture = showMatchs(d);
+                    });
+                    
+                  },
+                ),
+              ],
             ),
-            isAutoSelect: true,
-            onChangedSelectedDate: (date) {
-              date = date;
-            },
-            onChangedPage: (date, state) {
-              FutureBuilder(
-                future: showMatchs(date),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return const Center(child: Text('Error loading data'));
-                  } else {
-                    return Expanded(
-                      child: ListView.separated(
-                        itemBuilder: (context, index) {
-                          var m = matchs['response'][index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MatchsInformation(
-                                    matchs: matchs,
-                                    index: index,
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: matchsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  print(snapshot.error);
+                  return const Center(child: Text('Error loading data'));
+                } else {
+                  return Expanded(
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var m = matchs['response'][index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MatchsInformation(
+                                  matchs: matchs,
+                                  index: index,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Image.network(
+                                          m['teams']['home']['logo']),
+                                      const SizedBox(
+                                        height: 16,
+                                      ),
+                                      Text(
+                                        m['teams']['home']['name'].toString(),
+                                        textAlign: TextAlign.start,
+                                        style:
+                                            const TextStyle(fontSize: 16.0),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Image.network(
-                                            m['teams']['home']['logo']),
-                                        const SizedBox(
-                                          height: 16,
-                                        ),
-                                        Text(
-                                          m['teams']['home']['name'].toString(),
-                                          textAlign: TextAlign.start,
-                                          style:
-                                              const TextStyle(fontSize: 16.0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 16,
-                                  ),
-                                  Expanded(
-                                    child: Container(
-                                      child: Center(
-                                        child: Text(
-                                          '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
-                                          style:
-                                              const TextStyle(fontSize: 16.0),
-                                        ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    child: Center(
+                                      child: Text(
+                                        '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
+                                        style:
+                                            const TextStyle(fontSize: 16.0),
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(
-                                    width: 16,
+                                ),
+                                const SizedBox(
+                                  width: 16,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.end,
+                                    children: [
+                                      Image.network(
+                                          m['teams']['away']['logo']),
+                                      const SizedBox(height: 16.0),
+                                      Text(
+                                        m['teams']['away']['name'].toString(),
+                                        textAlign: TextAlign.end,
+                                        style:
+                                            const TextStyle(fontSize: 16.0),
+                                      ),
+                                    ],
                                   ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Image.network(
-                                            m['teams']['away']['logo']),
-                                        const SizedBox(height: 16.0),
-                                        Text(
-                                          m['teams']['away']['name'].toString(),
-                                          textAlign: TextAlign.end,
-                                          style:
-                                              const TextStyle(fontSize: 16.0),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                        separatorBuilder: (context, index) => const Divider(),
-                        itemCount: matchs['response'].length,
-                      ),
-                    );
-                  }
-                },
-              );
-            },
+                          ),
+                        );
+                      },
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemCount: matchs['response'].length,
+                    ),
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -482,9 +503,11 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
     //     .getTopYellowcard(widget.leagueId, selectYear) as Map<String, dynamic>;
   }
 
-  Future<void> showMatchs(DateTime? date) async {
+  Future<void> showMatchs(date) async {
     matchs =
-        await sport_api().matchsInformation(widget.leagueId, selectYear, date!)
+        await sport_api().matchsInformation(widget.leagueId, selectYear, date)
             as Map<String, dynamic>;
+
+    print(matchs);
   }
 }

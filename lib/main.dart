@@ -162,7 +162,7 @@ class _firstPageState extends State<firstPage> {
                         itemBuilder: (context, index) {
                           var T = leagueTeam['response'][index]['league'];
                           var name = T['name'];
-                          var len = 100 + Random().nextInt(200).toDouble();
+                          var len = 100.toDouble();
                           if (searchText.isNotEmpty &&
                               !T['name']
                                   .toLowerCase()
@@ -177,17 +177,18 @@ class _firstPageState extends State<firstPage> {
                                 decoration: const BoxDecoration(
                                   color: Colors.white,
                                 ),
-                                child: ClipOval(
-                                  child: Image.network(
-                                    T['logo'],
-                                    width: 70,
-                                    height: len - 40, // 높이에서 padding 두 배를 뺌
-                                  ),
+                                child: Image.network(
+                                  T['logo'],
+                                  width: 70,
+                                  height: 70, // 높이에서 padding 두 배를 뺌
                                 ),
                               ),
-                              subtitle: Text(
-                                '$name - ${leagueTeam['response'][index]['country']['name']}',
-                                style: const TextStyle(fontSize: 18),
+                                subtitle: Container(
+                                alignment: Alignment.topCenter, // Center the text
+                                child: Text(
+                                  '$name \n${leagueTeam['response'][index]['country']['name']}',
+                                  style: const TextStyle(fontSize: 18),
+                                ),
                               ),
                               onTap: () {
                                 Navigator.push(
