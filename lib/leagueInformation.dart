@@ -28,7 +28,7 @@ class ShowDetailInformation extends StatefulWidget {
 
 class _ShowDetailInformationState extends State<ShowDetailInformation> {
   List id = ['Matchs', 'Rank', 'Record'];
-  int selectedOption = 0;
+  int selectedOption = 2;
   final _years = ['2020', '2021', '2022', '2023'];
   String selectYear = '2023';
   Map<String, dynamic> ranking = {};
@@ -50,7 +50,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   @override
   Widget build(BuildContext context) {
     var futureBuilderMatchs = Scaffold(
-      body: Column(        
+      body: Column(
         children: [
           Expanded(
             child: Column(
@@ -84,7 +84,6 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                       d = date;
                       matchsFuture = showMatchs(d);
                     });
-                    
                   },
                 ),
               ],
@@ -126,16 +125,14 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Image.network(
-                                          m['teams']['home']['logo']),
+                                      Image.network(m['teams']['home']['logo']),
                                       const SizedBox(
                                         height: 16,
                                       ),
                                       Text(
                                         m['teams']['home']['name'].toString(),
                                         textAlign: TextAlign.start,
-                                        style:
-                                            const TextStyle(fontSize: 16.0),
+                                        style: const TextStyle(fontSize: 16.0),
                                       ),
                                     ],
                                   ),
@@ -148,8 +145,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                                     child: Center(
                                       child: Text(
                                         '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
-                                        style:
-                                            const TextStyle(fontSize: 16.0),
+                                        style: const TextStyle(fontSize: 16.0),
                                       ),
                                     ),
                                   ),
@@ -159,17 +155,14 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                                 ),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.end,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
                                     children: [
-                                      Image.network(
-                                          m['teams']['away']['logo']),
+                                      Image.network(m['teams']['away']['logo']),
                                       const SizedBox(height: 16.0),
                                       Text(
                                         m['teams']['away']['name'].toString(),
                                         textAlign: TextAlign.end,
-                                        style:
-                                            const TextStyle(fontSize: 16.0),
+                                        style: const TextStyle(fontSize: 16.0),
                                       ),
                                     ],
                                   ),

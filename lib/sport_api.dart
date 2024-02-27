@@ -208,17 +208,15 @@ class sport_api {
       String leagueId, String selectYear, date) async {
     final String url = 'https://api-football-v1.p.rapidapi.com/v3/fixtures';
 
-    print(date);
     String d = DateFormat('yyyy-MM-dd').format(date);
-    print(d);
-    d = '2024-02-25';
 
     final Map<String, String> headers = {
       'X-RapidAPI-Key': apiKey,
       'X-RapidAPI-Host': apiHost,
     };
 
-    final Uri uri = Uri.parse('$url?date=${d}&league=61&season=2023');
+    final Uri uri =
+        Uri.parse('$url?date=${d}&league=${leagueId}&season=${selectYear}');
 
     try {
       final http.Response response = await http.get(uri, headers: headers);
