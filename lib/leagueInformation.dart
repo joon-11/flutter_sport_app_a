@@ -4,7 +4,7 @@ import 'dart:html';
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_sport/Detailranking.dart';
-import 'package:flutter_application_sport/leagueDetail.dart';
+import 'package:flutter_application_sport/teamdetail.dart';
 import 'package:flutter_application_sport/matchsInformation.dart';
 import 'package:flutter_application_sport/playerInformation.dart';
 import 'package:flutter_application_sport/sport_api.dart';
@@ -53,6 +53,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
       body: Column(
         children: [
           Expanded(
+            flex: 2,
             child: Column(
               children: [
                 WeeklyCalendar(
@@ -90,6 +91,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
             ),
           ),
           Expanded(
+            flex: 8,
             child: FutureBuilder(
               future: matchsFuture,
               builder: (context, snapshot) {
@@ -99,82 +101,79 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                   print(snapshot.error);
                   return const Center(child: Text('Error loading data'));
                 } else {
-                  return Expanded(
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        var m = matchs['response'][index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MatchsInformation(
-                                  matchs: matchs,
-                                  index: index,
+                  return ListView.separated(
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      var m = matchs['response'][index];
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MatchsInformation(
+                                matchs: matchs,
+                                index: index,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.network(m['teams']['home']['logo']),
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Text(
+                                      m['teams']['home']['name'].toString(),
+                                      textAlign: TextAlign.start,
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            );
-                          },
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Image.network(m['teams']['home']['logo']),
-                                      const SizedBox(
-                                        height: 16,
-                                      ),
-                                      Text(
-                                        m['teams']['home']['name'].toString(),
-                                        textAlign: TextAlign.start,
-                                        style: const TextStyle(fontSize: 16.0),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  width: 16,
-                                ),
-                                Expanded(
-                                  child: Container(
-                                    child: Center(
-                                      child: Text(
-                                        '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
-                                        style: const TextStyle(fontSize: 16.0),
-                                      ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              Expanded(
+                                child: Container(
+                                  child: Center(
+                                    child: Text(
+                                      '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
+                                      style: const TextStyle(fontSize: 16.0),
                                     ),
                                   ),
                                 ),
-                                const SizedBox(
-                                  width: 16,
+                              ),
+                              const SizedBox(
+                                width: 16,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Image.network(m['teams']['away']['logo']),
+                                    const SizedBox(height: 16.0),
+                                    Text(
+                                      m['teams']['away']['name'].toString(),
+                                      textAlign: TextAlign.end,
+                                      style: const TextStyle(fontSize: 16.0),
+                                    ),
+                                  ],
                                 ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Image.network(m['teams']['away']['logo']),
-                                      const SizedBox(height: 16.0),
-                                      Text(
-                                        m['teams']['away']['name'].toString(),
-                                        textAlign: TextAlign.end,
-                                        style: const TextStyle(fontSize: 16.0),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => const Divider(),
-                      itemCount: matchs['response'].length,
-                    ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) => const Divider(),
+                    itemCount: matchs['response'].length,
                   );
                 }
               },
@@ -253,34 +252,35 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                       itemBuilder: (context, index) {
                         var score = topScorers['response'][index]['player'];
                         return ListTile(
-                            leading: Container(
-                              decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(8),
-                                  )),
-                              child: Image.network(
-                                score['photo'],
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              score['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${score['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topScorers['response'][index]['statistics'][0]
+                                    ['goals']['total']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayerInformation(
+                                playerInfo: topScorers['response'][index],
                               ),
                             ),
-                            title: Text(
-                              '${index + 1}. ${score['name']}',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                            trailing: Text(
-                              topScorers['response'][index]['statistics'][0]
-                                      ['goals']['total']
-                                  .toString(),
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PlayerInformation(
-                                      info: topScorers['response'][index],
-                                    ),
-                                  ),
-                                ));
+                          ),
+                        );
                       },
                       itemCount: 5,
                       separatorBuilder: (context, index) => const Divider(),
@@ -290,120 +290,144 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                 const SizedBox(
                   height: 10,
                 ),
-                // ExpansionTile(
-                //   initiallyExpanded: false,
-                //   title: Text('어시스트 순위'),
-                //   children: [
-                //     ListView.separated(
-                //       shrinkWrap: true,
-                //       itemBuilder: (context, index) {
-                //         var assist = topAssist['response'][index]['player'];
-                //         return ListTile(
-                //           leading: Container(
-                //             decoration: const BoxDecoration(
-                //                 color: Colors.white,
-                //                 borderRadius: BorderRadius.all(
-                //                   Radius.circular(8),
-                //                 )),
-                //             child: Image.network(
-                //               assist['photo'],
-                //             ),
-                //           ),
-                //           title: Text(
-                //             '${index + 1}. ${assist['name']}',
-                //             style: const TextStyle(color: Colors.white),
-                //           ),
-                //           trailing: Text(
-                //             topAssist['response'][index]['statistics'][0]
-                //                     ['goals']['assists']
-                //                 .toString(),
-                //             style: const TextStyle(fontSize: 18),
-                //           ),
-                //         );
-                //       },
-                //       itemCount: 5,
-                //       separatorBuilder: (context, index) => const Divider(),
-                //     ),
-                //   ],
-                // ),
-                // SizedBox(
-                //   height: 10,
-                // ),
-                // ExpansionTile(
-                //   initiallyExpanded: false,
-                //   title: Text('레드카드 순위'),
-                //   children: [
-                //     ListView.separated(
-                //       shrinkWrap: true,
-                //       itemBuilder: (context, index) {
-                //         var red = topRedcard['response'][index]['player'];
-                //         return ListTile(
-                //           leading: Container(
-                //             decoration: const BoxDecoration(
-                //                 color: Colors.white,
-                //                 borderRadius: BorderRadius.all(
-                //                   Radius.circular(8),
-                //                 )),
-                //             child: Image.network(
-                //               red['photo'],
-                //             ),
-                //           ),
-                //           title: Text(
-                //             '${index + 1}. ${red['name']}',
-                //             style: const TextStyle(color: Colors.white),
-                //           ),
-                //           trailing: Text(
-                //             topRedcard['response'][index]['statistics'][0]
-                //                     ['cards']['red']
-                //                 .toString(),
-                //             style: const TextStyle(fontSize: 18),
-                //           ),
-                //         );
-                //       },
-                //       itemCount: 5,
-                //       separatorBuilder: (context, index) => const Divider(),
-                //     ),
-                //   ],
-                // ),
-                // SizedBox(
-                //   height: 10,
-                // ),
-                // ExpansionTile(
-                //   initiallyExpanded: false,
-                //   title: Text('옐로카드 순위'),
-                //   children: [
-                //     ListView.separated(
-                //       shrinkWrap: true,
-                //       itemBuilder: (context, index) {
-                //         var yellow = topYellowcard['response'][index]['player'];
-                //         return ListTile(
-                //           leading: Container(
-                //             decoration: const BoxDecoration(
-                //                 color: Colors.white,
-                //                 borderRadius: BorderRadius.all(
-                //                   Radius.circular(8),
-                //                 )),
-                //             child: Image.network(
-                //               yellow['photo'],
-                //             ),
-                //           ),
-                //           title: Text(
-                //             '${index + 1}. ${yellow['name']}',
-                //             style: const TextStyle(color: Colors.white),
-                //           ),
-                //           trailing: Text(
-                //             topYellowcard['response'][index]['statistics'][0]
-                //                     ['cards']['yellow']
-                //                 .toString(),
-                //             style: const TextStyle(fontSize: 18),
-                //           ),
-                //         );
-                //       },
-                //       itemCount: 5,
-                //       separatorBuilder: (context, index) => const Divider(),
-                //     ),
-                //   ],
-                // ),
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('어시스트 순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var assist = topAssist['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              assist['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${assist['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topAssist['response'][index]['statistics'][0]
+                                    ['goals']['assists']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayerInformation(
+                                playerInfo: topAssist['response'][index],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('레드카드 순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var red = topRedcard['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              red['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${red['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topRedcard['response'][index]['statistics'][0]
+                                    ['cards']['red']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayerInformation(
+                                playerInfo: topRedcard['response'][index],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                ExpansionTile(
+                  initiallyExpanded: false,
+                  title: Text('옐로카드 순위'),
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        var yellow = topYellowcard['response'][index]['player'];
+                        return ListTile(
+                          leading: Container(
+                            decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(8),
+                                )),
+                            child: Image.network(
+                              yellow['photo'],
+                            ),
+                          ),
+                          title: Text(
+                            '${index + 1}. ${yellow['name']}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          trailing: Text(
+                            topYellowcard['response'][index]['statistics'][0]
+                                    ['cards']['yellow']
+                                .toString(),
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlayerInformation(
+                                playerInfo: topYellowcard['response'][index],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: 5,
+                      separatorBuilder: (context, index) => const Divider(),
+                    ),
+                  ],
+                ),
                 const SizedBox(
                   height: 300,
                 )
@@ -428,7 +452,6 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
       } else if (selectedOption == 2) {
         return futureBuilderRecord;
       } else {
-        // 기본적으로 빈 컨테이너를 반환하거나 다른 처리를 수행할 수 있습니다.
         return Container();
       }
     }
@@ -488,19 +511,18 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   Future<void> showRecord() async {
     topScorers = await sport_api().getTopScorers(widget.leagueId, selectYear)
         as Map<String, dynamic>;
-    // topAssist = await sport_api().getTopAssist(widget.leagueId, selectYear)
-    //     as Map<String, dynamic>;
-    // topRedcard = await sport_api().getTopRedcard(widget.leagueId, selectYear)
-    //     as Map<String, dynamic>;
-    // topYellowcard = await sport_api()
-    //     .getTopYellowcard(widget.leagueId, selectYear) as Map<String, dynamic>;
+
+    topAssist = await sport_api().getTopAssist(widget.leagueId, selectYear)
+        as Map<String, dynamic>;
+    topRedcard = await sport_api().getTopRedcard(widget.leagueId, selectYear)
+        as Map<String, dynamic>;
+    topYellowcard = await sport_api()
+        .getTopYellowcard(widget.leagueId, selectYear) as Map<String, dynamic>;
   }
 
   Future<void> showMatchs(date) async {
     matchs =
         await sport_api().matchsInformation(widget.leagueId, selectYear, date)
             as Map<String, dynamic>;
-
-    print(matchs);
   }
 }

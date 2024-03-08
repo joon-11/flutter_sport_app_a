@@ -1,6 +1,6 @@
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_sport/leagueDetail.dart';
+import 'package:flutter_application_sport/teamdetail.dart';
 import 'package:flutter_application_sport/sport_api.dart';
 
 class ShowCupInformation extends StatefulWidget {

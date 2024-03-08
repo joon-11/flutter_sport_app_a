@@ -1,70 +1,50 @@
+import 'dart:async';
+
 import 'package:appbar_animated/appbar_animated.dart';
 import 'package:flutter/material.dart';
 
 class PlayerInformation extends StatelessWidget {
-  Map<String, dynamic> info;
+  final Map<String, dynamic> playerInfo;
 
   PlayerInformation({
-    super.key,
-    required this.info,
-  });
+    Key? key,
+    required this.playerInfo,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(info['player']['name']),
-          centerTitle: true,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          '${playerInfo['player']['firstname']} ${playerInfo['player']['lastname']}',
         ),
-        body: Center(
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
+      ),
+      body: SingleChildScrollView(
+        child: DefaultTextStyle(
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+          ), // Set the desired text size here
+          child: Center(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircleAvatar(
-                  radius: 80.0,
-                  backgroundImage: NetworkImage(info['player']['photo']),
-                ),
-                const SizedBox(height: 16.0),
-                Text(
-                  info['player']['firstname'] +
-                      " " +
-                      info['player']['lastname'],
-                  style: const TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  '팀: ${info['statistics'][0]['team']['name']}',
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  '나이: ${info['player']['age']}',
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-                const SizedBox(height: 8.0),
-                Text(
-                  '국적: ${info['player']['nationality']}',
-                  style: const TextStyle(fontSize: 16.0),
-                ),
-                const SizedBox(height: 16.0),
+                Image.network(playerInfo['player']['photo']),
+                const SizedBox(height: 16),
                 const Text(
-                  '선수 소개 및 경력:',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  '기본 정보',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8.0),
-                const Text(
-                  '선수에 대한 간단한 소개나 경력 정보를 입력하세요.',
-                  style: TextStyle(fontSize: 16.0),
+                const SizedBox(height: 8),
+                Text('나이: ${playerInfo['player']['age']}'),
+                Text('출생일: ${playerInfo['player']['birth']['date']}'),
+                Text(
+                  '출생지: ${playerInfo['player']['birth']['place']}, ${playerInfo['player']['birth']['country']}',
                 ),
+                Text('국적: ${playerInfo['player']['nationality']}'),
+                Text('키: ${playerInfo['player']['height']}'),
+                Text('몸무게: ${playerInfo['player']['weight']}'),
+                const SizedBox(height: 16),
               ],
             ),
           ),

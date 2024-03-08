@@ -48,6 +48,7 @@ class _firstPageState extends State<firstPage> {
   Map<String, dynamic> leagueTeam = {};
   Future<void>? _teamListFuture;
   String searchText = '';
+  var name = '';
 
   @override
   void initState() {
@@ -144,8 +145,7 @@ class _firstPageState extends State<firstPage> {
                       itemCount: 100,
                       itemBuilder: (context, index) {
                         var T = leagueTeam['response'][index]['league'];
-                        print(T['name']);
-                        var name = getTranslation(T['name']);
+                        var name = T['name'];
                         var len = 100.toDouble();
                         if (searchText.isNotEmpty &&
                             !T['name']
@@ -212,28 +212,30 @@ class _firstPageState extends State<firstPage> {
 
   Future<void> teamShowing() async {
     leagueTeam = await sport_api().loadTeam() as Map<String, dynamic>;
-  }
 
-  Future<String> getTranslation(text) async {
     var result_cloud_google = '';
     var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
     var key = 'AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw';
     var to = "ko"; //(ex: en, ko, etc..)
 
-    var response = await http.post(
-      Uri.parse('$_baseUrl?target=$to&key=$key&q=$text'),
-    );
+    //   for (var i = 0; i < 100; i++) {
+    //     var text = leagueTeam['response'][i]['league']['name'];
 
-    if (response.statusCode == 200) {
-      var dataJson = jsonDecode(response.body);
-      var translatedText =
-          dataJson['data']['translations'][0]['translatedText'];
-      print(translatedText);
+    //     var response = await http.post(
+    //       Uri.parse('$_baseUrl?target=$to&key=$key&q=$text'),
+    //     );
 
-      return translatedText;
-    } else {
-      print(response.statusCode);
-      return '번역오류';
-    }
+    //     if (response.statusCode == 200) {
+    //       var dataJson = jsonDecode(response.body);
+
+    //       var translatedText =
+    //           dataJson['data']['translations'][0]['translatedText'];
+
+    //       leagueTeam['response'][i]['league']['name'] = translatedText;
+    //     } else {
+    //       print(response.statusCode);
+    //       print('오류');
+    //     }
+    //   }
   }
 }
