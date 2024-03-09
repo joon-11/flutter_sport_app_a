@@ -217,25 +217,26 @@ class _firstPageState extends State<firstPage> {
     var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
     var key = 'AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw';
     var to = "ko"; //(ex: en, ko, etc..)
+    var from = "en";
 
-    //   for (var i = 0; i < 100; i++) {
-    //     var text = leagueTeam['response'][i]['league']['name'];
+    // for (var i = 0; i < 100; i++) {
+    //   var text = leagueTeam['response'][i]['league']['name'];
 
-    //     var response = await http.post(
-    //       Uri.parse('$_baseUrl?target=$to&key=$key&q=$text'),
-    //     );
+    //   var response = await http.post(
+    //     Uri.parse('$_baseUrl?source=$from&target=$to&key=$key&q=$text'),
+    //   );
 
-    //     if (response.statusCode == 200) {
-    //       var dataJson = jsonDecode(response.body);
+    //   if (response.statusCode == 200) {
+    //     var dataJson = jsonDecode(response.body);
 
-    //       var translatedText =
-    //           dataJson['data']['translations'][0]['translatedText'];
+    //     var translatedText =
+    //         dataJson['data']['translations'][0]['translatedText'];
 
-    //       leagueTeam['response'][i]['league']['name'] = translatedText;
-    //     } else {
-    //       print(response.statusCode);
-    //       print('오류');
-    //     }
+    //     leagueTeam['response'][i]['league']['name'] = translatedText;
+    //   } else {
+    //     print(response.statusCode);
+    //     print('오류');
     //   }
+    // }
   }
 }
