@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:core';
 import 'dart:html';
 
+import 'package:http/http.dart' as http;
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_sport/Detailranking.dart';
@@ -28,7 +30,7 @@ class ShowDetailInformation extends StatefulWidget {
 
 class _ShowDetailInformationState extends State<ShowDetailInformation> {
   List id = ['Matchs', 'Rank', 'Record'];
-  int selectedOption = 2;
+  int selectedOption = 1;
   final _years = ['2020', '2021', '2022', '2023'];
   String selectYear = '2023';
   Map<String, dynamic> ranking = {};
@@ -203,7 +205,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                     child: Image.network(r['team']['logo']),
                   ),
                   title: Text('${r['rank']}. ${r['team']['name']}'),
-                  subtitle: Text(r['form'].toString()),
+                  subtitle: Text(r['form'].replaceAll('W', '승').replaceAll('D', '무').replaceAll('L', '패').toString()),
                   trailing: Text(
                     r['points'].toString(),
                     style: const TextStyle(fontSize: 18),
@@ -506,6 +508,33 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
   Future<void> showRank() async {
     ranking = await sport_api().getStandings(selectYear, widget.leagueId)
         as Map<String, dynamic>;
+
+    var result_cloud_google = '';
+    var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
+    var key = 'AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw';
+    var to = "ko"; //(ex: en, ko, etc..)
+    var from = "en";
+
+    for (var i = 0; i < ranking['response'][0]['league']['standings'][0].length; i++) {
+      var text = ranking['response'][0]['league']['standings'][0][i]['team']['name'];
+
+      var response = await http.post(
+        Uri.parse('$_baseUrl?source=$from&target=$to&key=$key&q=$text'),
+      );
+
+      if (response.statusCode == 200) {
+        var dataJson = jsonDecode(response.body);
+
+        var translatedText =
+            dataJson['data']['translations'][0]['translatedText'];
+
+        ranking['response'][0]['league']['standings'][0][i]['team']['name'] = translatedText;
+      } else {
+        print(response.statusCode);
+        print('오류');
+      }
+    }
+
   }
 
   Future<void> showRecord() async {
