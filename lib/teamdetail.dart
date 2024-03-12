@@ -46,6 +46,7 @@ class _FootballTeamInformationState extends State<FootballTeamInformation> {
             } else if (snapshot.hasError) {
               return const Center(child: Text('데이터 로딩 중 오류 발생'));
             } else
+              // ignore: curly_braces_in_flow_control_structures
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

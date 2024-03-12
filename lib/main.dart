@@ -158,53 +158,56 @@ class _firstPageState extends State<firstPage> {
                           return const SizedBox.shrink();
                         }
 
-                        if(T['type'] == 'Cup'){
-                          return Container(height: 0, width: 0,);
-                        }else{
-                          return Container(
-                            height: len,
-                            child: ListTile(
-                              title: Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                ),
-                                child: Image.network(
-                                  T['logo'],
-                                  width: 70,
-                                  height: 70, // 높이에서 padding 두 배를 뺌
-                                ),
+                        // if (T['type'] == 'Cup') {
+                        //   return Container(
+                        //     height: 0,
+                        //     width: 0,
+                        //   );
+                        //} else {
+                        return Container(
+                          height: len,
+                          child: ListTile(
+                            title: Container(
+                              padding: const EdgeInsets.all(20),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
                               ),
-                              subtitle: Container(
-                                alignment: Alignment.topCenter, // Center the text
-                                child: Text(
-                                  '$name \n${leagueTeam['response'][index]['country']['name']}',
-                                  style: const TextStyle(fontSize: 18),
-                                ),
+                              child: Image.network(
+                                T['logo'],
+                                width: 70,
+                                height: 70, // 높이에서 padding 두 배를 뺌
                               ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      if (T['type'] == 'Cup') {
-                                        return ShowCupInformation(
-                                          leagueId: T['id'].toString(),
-                                          leagueName: T['name'].toString(),
-                                        );
-                                      } else {
-                                        return ShowDetailInformation(
-                                          leagueId: T['id'].toString(),
-                                          leagueName: T['name'].toString(),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                );
-                              },
                             ),
-                          );
-                        }
+                            subtitle: Container(
+                              alignment: Alignment.topCenter, // Center the text
+                              child: Text(
+                                '$name \n${leagueTeam['response'][index]['country']['name']}',
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    if (T['type'] == 'Cup') {
+                                      return ShowCupInformation(
+                                        leagueId: T['id'].toString(),
+                                        leagueName: T['name'].toString(),
+                                      );
+                                    } else {
+                                      return ShowDetailInformation(
+                                        leagueId: T['id'].toString(),
+                                        leagueName: T['name'].toString(),
+                                      );
+                                    }
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                        //}
                       },
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2),
@@ -222,41 +225,42 @@ class _firstPageState extends State<firstPage> {
   Future<void> teamShowing() async {
     leagueTeam = await sport_api().loadTeam() as Map<String, dynamic>;
 
-    for (var i = 0; i < 100; i++) {
-      if(leagueTeam['response'][i]['league']['type'] == 'Cup'){
-        leagueTeam.remove('response'[i]); 
-        print(leagueTeam['response'][i]['league']);
-      };  
-      
-    }
-
-    
-    // print(leagueTeam);
-
-    // var result_cloud_google = '';
-    // var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
-    // var key = 'AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw';
-    // var to = "ko"; //(ex: en, ko, etc..)
-    // var from = "en";
-
     // for (var i = 0; i < 100; i++) {
-    //   var text = leagueTeam['response'][i]['league']['name'];
-
-    //   var response = await http.post(
-    //     Uri.parse('$_baseUrl?source=$from&target=$to&key=$key&q=$text'),
-    //   );
-
-    //   if (response.statusCode == 200) {
-    //     var dataJson = jsonDecode(response.body);
-
-    //     var translatedText =
-    //         dataJson['data']['translations'][0]['translatedText'];
-
-    //     leagueTeam['response'][i]['league']['name'] = translatedText;
-    //   } else {
-    //     print(response.statusCode);
-    //     print('오류');
+    //   if (leagueTeam['response'][i]['league']['type'] == 'Cup') {
+    //     leagueTeam.removeWhere(
+    //       (key, value) => value == leagueTeam['response'][i],
+    //     );
+    //     print(leagueTeam['response'][i]['league']);
     //   }
-    // }
+    //   ;
   }
+
+  // print(leagueTeam);
+
+  // var result_cloud_google = '';
+  // var _baseUrl = 'https://translation.googleapis.com/language/translate/v2';
+  // var key = 'AIzaSyB7ycsWdOce99KTgCctpc1cnKH-Sdh_knw';
+  // var to = "ko"; //(ex: en, ko, etc..)
+  // var from = "en";
+
+  // for (var i = 0; i < 100; i++) {
+  //   var text = leagueTeam['response'][i]['league']['name'];
+
+  //   var response = await http.post(
+  //     Uri.parse('$_baseUrl?source=$from&target=$to&key=$key&q=$text'),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     var dataJson = jsonDecode(response.body);
+
+  //     var translatedText =
+  //         dataJson['data']['translations'][0]['translatedText'];
+
+  //     leagueTeam['response'][i]['league']['name'] = translatedText;
+  //   } else {
+  //     print(response.statusCode);
+  //     print('오류');
+  //   }
+  // }
+// }
 }

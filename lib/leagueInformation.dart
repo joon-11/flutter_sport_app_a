@@ -30,7 +30,7 @@ class ShowDetailInformation extends StatefulWidget {
 
 class _ShowDetailInformationState extends State<ShowDetailInformation> {
   List id = ['Matchs', 'Rank', 'Record'];
-  int selectedOption = 1;
+  int selectedOption = 0;
   final _years = ['2020', '2021', '2022', '2023'];
   String selectYear = '2023';
   Map<String, dynamic> ranking = {};
@@ -103,79 +103,89 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                   print(snapshot.error);
                   return const Center(child: Text('Error loading data'));
                 } else {
-                  return ListView.separated(
-                    shrinkWrap: true,
+                  return ListView.builder(
+                    itemCount: matchs['response'].length,
                     itemBuilder: (context, index) {
-                      var m = matchs['response'][index];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MatchsInformation(
-                                matchs: matchs,
-                                index: index,
+                      Map<String, dynamic> fixture = matchs['response'][index];
+                      return Card(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: Image.network(
+                                  fixture['teams']['home']['logo'],
+                                  height: 100,
+                                  width: 100),
+                              title: Center(
+                                child: Text(
+                                    '${fixture['teams']['home']['name']} vs ${fixture['teams']['away']['name']}'),
                               ),
-                            ),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(16),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Image.network(m['teams']['home']['logo']),
-                                    const SizedBox(
-                                      height: 16,
-                                    ),
-                                    Text(
-                                      m['teams']['home']['name'].toString(),
-                                      textAlign: TextAlign.start,
-                                      style: const TextStyle(fontSize: 16.0),
-                                    ),
-                                  ],
-                                ),
+                              trailing: Image.network(
+                                fixture['teams']['away']['logo'],
+                                height: 100,
+                                width: 100,
                               ),
-                              const SizedBox(
-                                width: 16,
+                              subtitle: Center(
+                                // ignore: prefer_interpolation_to_compose_strings
+                                child: Text('날짜: ' +
+                                    fixture['fixture']['date']
+                                        .replaceAll('T', '')
+                                        .replaceAll(':00+00:00', '')),
                               ),
-                              Expanded(
-                                child: Container(
-                                  child: Center(
-                                    child: Text(
-                                      '현지시간 ${m['fixture']['date'].toString().replaceAll(':00+00:00', '').replaceAll('T', '\n')}',
-                                      style: const TextStyle(fontSize: 16.0),
+                              onTap: () {
+                                print(fixture['fixture']['id']);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MatchsInformation(
+                                      id: fixture['fixture']['id'],
                                     ),
                                   ),
-                                ),
+                                );
+                              },
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    children: [
+                                      Text('점수'),
+                                      Text('${fixture['score']['fulltime']['home']} - ${fixture['score']['fulltime']['away']}' ==
+                                              'null - null'
+                                          ? '경기전'
+                                          : '${fixture['score']['fulltime']['home']} - ${fixture['score']['fulltime']['away']}'),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('Status'),
+                                      Text(fixture['fixture']['status']
+                                                  ['long'] ==
+                                              "Match Finished"
+                                          ? '경기종료'
+                                          : fixture['fixture']['status']
+                                                      ['long'] ==
+                                                  'Time to be defined'
+                                              ? '연기됨'
+                                              : '경기전'),
+                                    ],
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text('위치'),
+                                      Text(
+                                          '${fixture['fixture']['venue']['name']}'),
+                                    ],
+                                  ),
+                                ],
                               ),
-                              const SizedBox(
-                                width: 16,
-                              ),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Image.network(m['teams']['away']['logo']),
-                                    const SizedBox(height: 16.0),
-                                    Text(
-                                      m['teams']['away']['name'].toString(),
-                                      textAlign: TextAlign.end,
-                                      style: const TextStyle(fontSize: 16.0),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       );
                     },
-                    separatorBuilder: (context, index) => const Divider(),
-                    itemCount: matchs['response'].length,
                   );
                 }
               },
@@ -205,7 +215,11 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                     child: Image.network(r['team']['logo']),
                   ),
                   title: Text('${r['rank']}. ${r['team']['name']}'),
-                  subtitle: Text(r['form'].replaceAll('W', '승').replaceAll('D', '무').replaceAll('L', '패').toString()),
+                  subtitle: Text(r['form']
+                      .replaceAll('W', '승')
+                      .replaceAll('D', '무')
+                      .replaceAll('L', '패')
+                      .toString()),
                   trailing: Text(
                     r['points'].toString(),
                     style: const TextStyle(fontSize: 18),
@@ -294,7 +308,7 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                 ),
                 ExpansionTile(
                   initiallyExpanded: false,
-                  title: Text('어시스트 순위'),
+                  title: const Text('어시스트 순위'),
                   children: [
                     ListView.separated(
                       shrinkWrap: true,
@@ -336,12 +350,12 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 ExpansionTile(
                   initiallyExpanded: false,
-                  title: Text('레드카드 순위'),
+                  title: const Text('레드카드 순위'),
                   children: [
                     ListView.separated(
                       shrinkWrap: true,
@@ -383,12 +397,12 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 10,
                 ),
                 ExpansionTile(
                   initiallyExpanded: false,
-                  title: Text('옐로카드 순위'),
+                  title: const Text('옐로카드 순위'),
                   children: [
                     ListView.separated(
                       shrinkWrap: true,
@@ -515,8 +529,11 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
     var to = "ko"; //(ex: en, ko, etc..)
     var from = "en";
 
-    for (var i = 0; i < ranking['response'][0]['league']['standings'][0].length; i++) {
-      var text = ranking['response'][0]['league']['standings'][0][i]['team']['name'];
+    for (var i = 0;
+        i < ranking['response'][0]['league']['standings'][0].length;
+        i++) {
+      var text =
+          ranking['response'][0]['league']['standings'][0][i]['team']['name'];
 
       var response = await http.post(
         Uri.parse('$_baseUrl?source=$from&target=$to&key=$key&q=$text'),
@@ -528,13 +545,13 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
         var translatedText =
             dataJson['data']['translations'][0]['translatedText'];
 
-        ranking['response'][0]['league']['standings'][0][i]['team']['name'] = translatedText;
+        ranking['response'][0]['league']['standings'][0][i]['team']['name'] =
+            translatedText;
       } else {
         print(response.statusCode);
         print('오류');
       }
     }
-
   }
 
   Future<void> showRecord() async {

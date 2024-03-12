@@ -1,22 +1,18 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 class MatchsInformation extends StatelessWidget {
-  final Map<String, dynamic> matchs;
+  Int id;
 
-  var index;
-
-  MatchsInformation({super.key, required this.matchs, required this.index});
+  MatchsInformation({super.key, required this.id});
 
   @override
   Widget build(BuildContext context) {
+    print(id);
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Text(
-              matchs['response'][index]['teams']['home']['name'].toString()+
-                  " VS " +
-                  matchs['response'][index]['teams']['away']['name'].toString()),
-        ),
+        title: Text(id as String),
       ),
     );
   }
