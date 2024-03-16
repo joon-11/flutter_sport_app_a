@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_sport/cupInformation.dart';
 import 'package:flutter_application_sport/leagueInformation.dart';
@@ -50,13 +51,16 @@ class _firstPageState extends State<firstPage> {
   Map<String, dynamic> leagueTeam = {};
   Future<void>? _teamListFuture;
   String searchText = '';
+  Future<void>? _jsonTranslate;
   var name = '';
+  Map<String, dynamic> Ljson = {};
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _teamListFuture = teamShowing();
+    _jsonTranslate = languaeg();
   }
 
   @override
@@ -149,7 +153,15 @@ class _firstPageState extends State<firstPage> {
                       itemCount: 100,
                       itemBuilder: (context, index) {
                         var T = leagueTeam['response'][index]['league'];
-                        var name = T['name'];
+                        var id = T['id'];
+
+                        var name;
+                        if (Ljson['response'].length >= id) {
+                          name = Ljson['response'][id];
+                        } else {
+                          name = T['name'];
+                        }
+
                         var len = 100.toDouble();
                         if (searchText.isNotEmpty &&
                             !T['name']
@@ -263,4 +275,12 @@ class _firstPageState extends State<firstPage> {
   //   }
   // }
 // }
+
+  Future<Map<String, dynamic>> languaeg() async {
+    String jsonContent = await rootBundle.loadString('../assets/temp.json');
+    Map<String, dynamic> jsonData = jsonDecode(jsonContent);
+
+    Ljson = jsonData;
+    return jsonData;
+  }
 }

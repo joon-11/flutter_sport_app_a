@@ -1,9 +1,7 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 class MatchsInformation extends StatelessWidget {
-  Int id;
+  String id;
 
   MatchsInformation({super.key, required this.id});
 

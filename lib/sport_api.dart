@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf' naver
 
 class sport_api {
-  final String apiKey = '44b53a7a9fmshd4b09e186aeeefbp1eb70ejsnbca7d65497bd';
+  final String apiKey = '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc';
   final String apiHost = 'api-football-v1.p.rapidapi.com';
 
   Future<dynamic> getStandings(String season, String league) async {
@@ -59,6 +59,7 @@ class sport_api {
       final response = await http.get(uri, headers: headers);
 
       if (response.statusCode == 200) {
+        print(response.body);
         return json.decode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}');
