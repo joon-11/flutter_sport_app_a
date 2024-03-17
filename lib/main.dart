@@ -156,11 +156,21 @@ class _firstPageState extends State<firstPage> {
                         var id = T['id'];
 
                         var name;
-                        if (Ljson['response'].length >= id) {
-                          name = Ljson['response'][id];
-                        } else {
-                          name = T['name'];
+
+                        for (var i in Ljson['response']) {
+                          if (i['id'] == id) {
+                            name = i['name'];
+                            break;
+                          } else {
+                            name = T['name'];
+                          }
                         }
+
+                        // if (Ljson['response'].length >= id) {
+                        //   name = Ljson['response'][id];
+                        // } else {
+                        //   name = T['name'];
+                        // }
 
                         var len = 100.toDouble();
                         if (searchText.isNotEmpty &&
@@ -277,10 +287,10 @@ class _firstPageState extends State<firstPage> {
 // }
 
   Future<Map<String, dynamic>> languaeg() async {
-    String jsonContent = await rootBundle.loadString('../assets/temp.json');
+    String jsonContent = await rootBundle.loadString('../assets/ko.json');
     Map<String, dynamic> jsonData = jsonDecode(jsonContent);
-
     Ljson = jsonData;
+    // print(Ljson['response'][1]['id']);
     return jsonData;
   }
 }
