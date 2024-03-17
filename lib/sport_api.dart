@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 // '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf' naver
 
 class sport_api {
-  final String apiKey = '6c6f57b93dmsh391caffd34718a7p13fe49jsnbbff15dbe7bc';
+  final String apiKey = '6f0a3673b5mshd4bbc5ca627763cp142354jsn6cee76f580bf';
   final String apiHost = 'api-football-v1.p.rapidapi.com';
 
   Future<dynamic> getStandings(String season, String league) async {
@@ -59,7 +60,6 @@ class sport_api {
       final response = await http.get(uri, headers: headers);
 
       if (response.statusCode == 200) {
-        print(response.body);
         return json.decode(response.body);
       } else {
         print('Request failed with status: ${response.statusCode}');
@@ -224,10 +224,29 @@ class sport_api {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-        print(data);
         return jsonDecode(response.body);
       } else {
         print('Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  Future<void> matchDetail(fixture) async {
+    final Uri uri = Uri.parse(
+        'https://api-football-v1.p.rapidapi.com/v3/fixtures/statistics?fixture=${fixture}');
+    final Map<String, String> headers = {
+      'X-RapidAPI-Key': apiKey,
+      'X-RapidAPI-Host': apiHost
+    };
+
+    try {
+      final response = await http.get(uri, headers: headers);
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        print('Request failed with status: ${response.statusCode}');
       }
     } catch (error) {
       print('Error: $error');

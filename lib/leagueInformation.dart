@@ -138,6 +138,12 @@ class _ShowDetailInformationState extends State<ShowDetailInformation> {
                                   MaterialPageRoute(
                                     builder: (context) => MatchsInformation(
                                       id: fixture['fixture']['id'],
+                                      home: fixture['teams']['home']['name'],
+                                      away: fixture['teams']['away']['name'],
+                                      homeLogo: fixture['teams']['home']
+                                          ['logo'],
+                                      awayLogo: fixture['teams']['away']
+                                          ['logo'],
                                     ),
                                   ),
                                 );
