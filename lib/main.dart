@@ -156,13 +156,17 @@ class _firstPageState extends State<firstPage> {
                         var id = T['id'];
 
                         var name;
+                        var country;
 
                         for (var i in Ljson['response']) {
                           if (i['id'] == id) {
                             name = i['name'];
+                            country = i['country'];
                             break;
                           } else {
                             name = T['name'];
+                            country = leagueTeam['response'][index]['country']
+                                ['name'];
                           }
                         }
 
@@ -203,7 +207,7 @@ class _firstPageState extends State<firstPage> {
                             subtitle: Container(
                               alignment: Alignment.topCenter, // Center the text
                               child: Text(
-                                '$name \n${leagueTeam['response'][index]['country']['name']}',
+                                '$name \n${country}',
                                 style: const TextStyle(fontSize: 18),
                               ),
                             ),
