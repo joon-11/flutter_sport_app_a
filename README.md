@@ -21,7 +21,7 @@
 
 ## 🔨 Technology Stack(s)
 
-Frontend :Flutter
+Frontend : Flutter
 <br />
 Backend : express.js
 <br />
